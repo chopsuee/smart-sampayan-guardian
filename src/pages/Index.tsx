@@ -13,7 +13,7 @@ const Index = () => {
     return <Navigate to="/admin" replace />;
   }
   
-  return <Navigate to="/" replace />;
+  return <Navigate to="/dashboard" replace />;
 };
 
 export default Index;

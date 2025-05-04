@@ -26,7 +26,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Trash2, Plus, Users } from 'lucide-react';
+import { Trash2, Plus, Users, RefreshCw } from 'lucide-react';
 
 const Admin = () => {
   const { user } = useAuth();
@@ -38,6 +38,10 @@ const Admin = () => {
     email: '',
   });
   const [open, setOpen] = useState(false);
+  const [generatedCredentials, setGeneratedCredentials] = useState<{
+    email: string;
+    password: string;
+  } | null>(null);
   
   // Redirect if not admin
   useEffect(() => {
@@ -102,6 +106,52 @@ const Admin = () => {
     });
   };
 
+  const generateRandomPassword = (length = 10) => {
+    const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
+    let password = "";
+    for (let i = 0; i < length; i++) {
+      const randomIndex = Math.floor(Math.random() * charset.length);
+      password += charset[randomIndex];
+    }
+    return password;
+  };
+
+  const generateRandomEmail = (name: string) => {
+    const domain = "sampayan.com";
+    const randomString = Math.random().toString(36).substring(2, 8);
+    const sanitizedName = name.toLowerCase().replace(/[^a-z0-9]/g, "");
+    return `${sanitizedName}${randomString}@${domain}`;
+  };
+
+  const handleGenerateCredentials = () => {
+    if (!newUser.name) {
+      toast({
+        title: "Name Required",
+        description: "Please enter a name to generate credentials",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const email = generateRandomEmail(newUser.name);
+    const password = generateRandomPassword();
+    
+    setNewUser({
+      ...newUser,
+      email,
+    });
+    
+    setGeneratedCredentials({
+      email,
+      password,
+    });
+    
+    toast({
+      title: "Credentials Generated",
+      description: "User credentials have been generated",
+    });
+  };
+
   const handleAddUser = () => {
     // Validate input
     if (!newUser.name || !newUser.email) {
@@ -140,8 +190,9 @@ const Admin = () => {
       description: `${newUser.name} has been added successfully`,
     });
     
-    // Reset form and close dialog
+    // Reset form, credentials and close dialog
     setNewUser({ name: '', email: '' });
+    setGeneratedCredentials(null);
     setOpen(false);
   };
 
@@ -211,15 +262,33 @@ const Admin = () => {
                     <label htmlFor="email" className="text-right">
                       Email
                     </label>
-                    <Input
-                      id="email"
-                      name="email"
-                      type="email"
-                      value={newUser.email}
-                      onChange={handleInputChange}
-                      className="col-span-3"
-                    />
+                    <div className="col-span-3 flex items-center gap-2">
+                      <Input
+                        id="email"
+                        name="email"
+                        type="email"
+                        value={newUser.email}
+                        onChange={handleInputChange}
+                        className="flex-1"
+                      />
+                      <Button 
+                        type="button" 
+                        variant="outline" 
+                        onClick={handleGenerateCredentials}
+                        title="Generate random credentials"
+                      >
+                        <RefreshCw className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
+                  {generatedCredentials && (
+                    <div className="col-span-4 p-3 border rounded-md bg-muted">
+                      <h4 className="font-semibold mb-2">Generated Credentials</h4>
+                      <p className="text-sm mb-1">Email: <span className="font-mono">{generatedCredentials.email}</span></p>
+                      <p className="text-sm mb-2">Password: <span className="font-mono">{generatedCredentials.password}</span></p>
+                      <p className="text-xs text-muted-foreground">Save these credentials. The password won't be shown again.</p>
+                    </div>
+                  )}
                 </div>
                 <DialogFooter>
                   <Button variant="outline" onClick={() => setOpen(false)}>
