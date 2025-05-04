@@ -102,6 +102,11 @@ export default function Header() {
                 <DropdownMenuItem asChild>
                   <Link to="/devices">Manage Devices</Link>
                 </DropdownMenuItem>
+                {user.role === 'admin' && (
+                  <DropdownMenuItem asChild>
+                    <Link to="/admin">Admin Dashboard</Link>
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={logout}>Log Out</DropdownMenuItem>
               </DropdownMenuContent>

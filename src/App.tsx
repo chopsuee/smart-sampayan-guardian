@@ -14,6 +14,7 @@ import Profile from "./pages/Profile";
 import Devices from "./pages/Devices";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
+import Index from "./pages/Index";
 
 const queryClient = new QueryClient();
 
@@ -28,7 +29,8 @@ const App = () => (
               <Sonner />
               <BrowserRouter>
                 <Routes>
-                  <Route path="/" element={<Dashboard />} />
+                  <Route path="/" element={<Index />} />
+                  <Route path="/dashboard" element={<Dashboard />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/profile" element={<Profile />} />
                   <Route path="/devices" element={<Devices />} />
