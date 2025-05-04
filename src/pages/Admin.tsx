@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
@@ -106,7 +105,10 @@ const Admin = () => {
     });
   };
 
-  const generateRandomPassword = (length = 10) => {
+  // Update the password generation function to create exactly 4-character passwords
+  const generateRandomPassword = () => {
+    // Use a fixed length of 4 characters for passwords
+    const length = 4;
     const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
     let password = "";
     for (let i = 0; i < length; i++) {
