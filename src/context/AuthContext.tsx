@@ -10,6 +10,7 @@ type AuthContextType = {
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
   isAuthenticated: boolean;
+  isAdmin: boolean;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -54,6 +55,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           title: "Login successful",
           description: `Welcome back, ${userData.name}!`,
         });
+      } else if (email === "admin@example.com" && password === "admin") {
+        // Admin login
+        const userData = {
+          id: "admin-1",
+          name: "Admin User",
+          email: "admin@example.com",
+          role: "admin" as const,
+          devices: [],
+        };
+        setUser(userData);
+        localStorage.setItem("smartSampayan_user", JSON.stringify({ email, role: "admin" }));
+        toast({
+          title: "Admin Login",
+          description: "Welcome to the admin dashboard",
+        });
       } else {
         throw new Error("Invalid credentials");
       }
@@ -79,7 +95,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, isAuthenticated: !!user }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      loading, 
+      login, 
+      logout, 
+      isAuthenticated: !!user,
+      isAdmin: user?.role === 'admin'
+    }}>
       {children}
     </AuthContext.Provider>
   );
