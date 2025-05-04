@@ -27,11 +27,16 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Trash2, Plus, Users, RefreshCw } from 'lucide-react';
 
+// Extended User type to include password for display purposes
+interface ExtendedUser extends User {
+  password?: string;
+}
+
 const Admin = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<ExtendedUser[]>([]);
   const [newUser, setNewUser] = useState({
     name: '',
     email: '',
@@ -60,7 +65,7 @@ const Admin = () => {
       try {
         // This would be an API call in a real app
         // For now, we'll use a mock list of users
-        const mockUsers: User[] = [
+        const mockUsers: ExtendedUser[] = [
           {
             id: '1',
             name: 'John Doe',
@@ -175,14 +180,16 @@ const Admin = () => {
       return;
     }
 
-    // Add new user
+    // Add new user with password if available
     const newId = `user-${Date.now()}`;
-    const userToAdd: User = {
+    const userToAdd: ExtendedUser = {
       id: newId,
       name: newUser.name,
       email: newUser.email,
       role: 'user',
       devices: [],
+      // Add the password from generated credentials if available
+      password: generatedCredentials?.password,
     };
 
     setUsers([...users, userToAdd]);
@@ -311,6 +318,7 @@ const Admin = () => {
                   <TableHead>Name</TableHead>
                   <TableHead>Email</TableHead>
                   <TableHead>Role</TableHead>
+                  <TableHead>Password</TableHead>
                   <TableHead>Devices</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
@@ -321,6 +329,7 @@ const Admin = () => {
                     <TableCell className="font-medium">{user.name}</TableCell>
                     <TableCell>{user.email}</TableCell>
                     <TableCell className="capitalize">{user.role || 'user'}</TableCell>
+                    <TableCell>{user.password || '••••'}</TableCell>
                     <TableCell>{user.devices.length}</TableCell>
                     <TableCell className="text-right">
                       <Button
