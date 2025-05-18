@@ -12,6 +12,18 @@ export default function DeviceCard() {
   const { selectedDevice, toggleAutomation, controlSampayan } = useDevices();
   const { isRaining } = useWeather();
 
+
+  //  Replace http://<ESP32-IP> with your ESP32’s local IP address like http://192.168.1.108
+  const sendServoCommand = async (angle: number) => {
+    try {
+      const response = await fetch(`http://192.168.137.235/servo?angle=${angle}`);
+      const result = await response.text();
+      console.log("ESP32 Response:", result);
+    } catch (error) {
+      console.error("Failed to send servo command:", error);
+    }
+  };
+
   if (!selectedDevice) {
     return (
       <Card>
@@ -92,7 +104,7 @@ export default function DeviceCard() {
                 </span>
               </div>
             </div>
-            <div className="flex-1">
+            <div className="flex-1 hidden">
               <div className="text-sm font-medium mb-1">Auto Mode</div>
               <div className="flex items-center gap-2">
                 <Switch
@@ -110,7 +122,10 @@ export default function DeviceCard() {
       </CardContent>
       <CardFooter className="flex justify-between">
         <Button
-          onClick={() => controlSampayan(selectedDevice.id, "open")}
+          onClick={() => {
+            controlSampayan(selectedDevice.id, "open");
+            sendServoCommand(180); // Open position
+          }}
           disabled={
             selectedDevice.sampayanStatus === "open" || 
             selectedDevice.sampayanStatus === "moving" || 
@@ -123,7 +138,10 @@ export default function DeviceCard() {
           <ArrowUp className="w-4 h-4 mr-1" /> Open
         </Button>
         <Button
-          onClick={() => controlSampayan(selectedDevice.id, "close")}
+            onClick={() => {
+              controlSampayan(selectedDevice.id, "close");
+              sendServoCommand(0); // Closed position
+            }}
           disabled={
             selectedDevice.sampayanStatus === "closed" || 
             selectedDevice.sampayanStatus === "moving" || 
